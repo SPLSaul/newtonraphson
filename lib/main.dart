@@ -4,9 +4,10 @@ import 'dart:math';
 
 void main() {
   MetodosNewton metodos = new MetodosNewton();
-  List<double> error = [0];
-  int x = 0;
-  metodos.problema1(error, x);
+  List<dynamic> resultados = metodos.problema1([], [], []);
+  List<double> errorestabla = resultados[0];
+  List<int> iteraciones = resultados[1];
+  List<double> xitabla = resultados[2];
   runApp(const MyApp());
 }
 
@@ -33,6 +34,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  MetodosNewton metodosNewton = new MetodosNewton();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,6 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+
 List<DataColumn> _columns = [    DataColumn(label: Text('Iteracion')),    DataColumn(label: Text('x')),    DataColumn(label: Text('Error')),  ];
 List<DataRow> _rows = [    DataRow(cells: [      DataCell(Text('0')),      DataCell(Text('{xi[1]}')),      DataCell(Text('2')),    ]),
   DataRow(cells: [
@@ -116,32 +119,27 @@ List<DataRow> _rows = [    DataRow(cells: [      DataCell(Text('0')),      DataC
   ]),
 ];
 
-
 class MetodosNewton{
-  List<DataRow> _rows = [    DataRow(cells: [      DataCell(Text('0')),      DataCell(Text('')),      DataCell(Text('')),    ]),
-  ];
-  void problema1(List<double> error, int x) {  //Newton Raphson normal
+  MetodosNewton mn = MetodosNewton();
+
+  List<dynamic> problema1(List<int> iteraciones,List<double> xitabla,List<double> errorestabla) {  //Newton Raphson normal
     List<double> xi = [0];
+    int x = 0;
     double errorP = 99;
     while (errorP > 1) {
-      //print("$x --- ${xi[x]} --- ${error[x]}");
       double fxi =
           pow(xi[x],4) - 6 * pow(xi[x],3) + 12 *pow(xi[x],2) - 10 * xi[x] + 3;
       double dfxi = 4 * pow(xi[x],3) - 18 * pow(xi[x],2) + 24 * xi[x] - 10;
       double ecuacionNR = xi[x] - fxi / dfxi;
       xi.add((ecuacionNR * 100000).roundToDouble() / 100000);
       errorP = ((xi[x + 1] - xi[x]) / xi[x + 1]).abs() * 100;
-      error.add((errorP * 100000).roundToDouble() / 100000);
+      errorestabla.add((errorP * 100000).roundToDouble() / 100000);
+      iteraciones.add(x);
+      xitabla.add(xi[x]);
       x++;
     }
-    _rows = _rows.asMap().entries.map((entry) {
-      int index = entry.key;
-      DataRow row = entry.value;
-      return DataRow(cells: [
-        DataCell(Text(index.toString())),
-        DataCell(Text(xi.length > index + 1 ? xi[index + 1].toString() : '')),
-        DataCell(Text(error.length > index ? error[index].toString() : '')),
-      ]);
-    }).toList();
+    return [errorestabla, iteraciones, xitabla];
   }
+
+
 }
